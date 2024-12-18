@@ -1,12 +1,12 @@
+import { Header } from "@/components/Header";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Button } from "@/components/ui/button";
-import { ModeToggle } from "@/components/mode-toggle";
+import { Outlet } from "react-router";
 
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <ModeToggle />
-      <Button>Click me</Button>
+      <Header />
+      <Outlet />
     </ThemeProvider>
   );
 }
