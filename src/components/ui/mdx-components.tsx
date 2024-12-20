@@ -102,6 +102,9 @@ export const mdxComponents: MDXComponents = {
   pre(properties) {
     return <pre {...properties}></pre>;
   },
+  img(properties) {
+    return <img {...properties} className="w-4/5 mx-auto" />;
+  },
   Lead(properties) {
     return <p {...properties} className="text-xl text-muted-foreground"></p>;
   },
