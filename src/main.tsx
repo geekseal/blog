@@ -1,3 +1,4 @@
+import CS01 from "@/pages/Content/index.tsx";
 import Home from "@/pages/Home";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
@@ -11,7 +12,7 @@ createRoot(document.getElementById("root")!).render(
       <Routes>
         <Route path="/" element={<App />}>
           <Route index element={<Home />} />
-          <Route path="/fe" element={<Home />} />
+          <Route path="/fe" element={<CS01 />} />
           <Route path="/be" element={<Home />} />
           <Route path="/algo" element={<Home />} />
           <Route path="/cs" element={<Home />} />
