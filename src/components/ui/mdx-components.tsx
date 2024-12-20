@@ -5,7 +5,7 @@ export const mdxComponents: MDXComponents = {
     return (
       <h1
         {...properties}
-        className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl"
+        className="scroll-m-20 text-3xl font-bold tracking-tight lg:text-5xl"
       ></h1>
     );
   },
@@ -13,7 +13,7 @@ export const mdxComponents: MDXComponents = {
     return (
       <h2
         {...properties}
-        className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0"
+        className="mt-10 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight first:mt-0"
       ></h2>
     );
   },
@@ -21,7 +21,7 @@ export const mdxComponents: MDXComponents = {
     return (
       <h3
         {...properties}
-        className="scroll-m-20 text-2xl font-semibold tracking-tight"
+        className="mt-8 scroll-m-20 text-xl font-semibold tracking-tight"
       ></h3>
     );
   },
@@ -29,7 +29,7 @@ export const mdxComponents: MDXComponents = {
     return (
       <h4
         {...properties}
-        className="scroll-m-20 text-xl font-semibold tracking-tight"
+        className="mt-8 scroll-m-20 text-lg font-semibold tracking-tight"
       ></h4>
     );
   },
@@ -80,7 +80,12 @@ export const mdxComponents: MDXComponents = {
   },
   ul(properties) {
     return (
-      <ul {...properties} className="my-6 ml-6 list-disc [&>li]:mt-2"></ul>
+      <ul {...properties} className="my-4 ml-6 list-disc [&>li]:mt-2"></ul>
+    );
+  },
+  ol(properties) {
+    return (
+      <ol {...properties} className="my-4 ml-6 list-decimal [&>li]:mt-2"></ol>
     );
   },
   li(properties) {
@@ -113,5 +118,13 @@ export const mdxComponents: MDXComponents = {
   },
   Muted(properties) {
     return <p {...properties} className="text-sm text-muted-foreground"></p>;
+  },
+  Callout({ children, ...properties }) {
+    return (
+      <div {...properties} className="mt-6 rounded p-4 bg-muted">
+        <span className="mr-3">💡</span>
+        {children}
+      </div>
+    );
   },
 };
