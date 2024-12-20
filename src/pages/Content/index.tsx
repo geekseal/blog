@@ -1,4 +1,4 @@
-import { mdxComponents } from "@/components/ui/mdx-components";
+import { mdxComponents } from "@/components/mdx-components";
 import CS01 from "@/contents/CS/cs01.mdx";
 
 const Content = () => {
