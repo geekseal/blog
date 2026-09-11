@@ -1,4 +1,43 @@
-import type { ResumeData } from "../types.js";
+import type { ContributionContent, ContributionItem, KeyContribution, ResumeData } from "../types.js";
+
+function formatContributionContent(content: ContributionContent): string[] {
+  if (typeof content === "string") return [content];
+
+  return [content.content, ...(content.example ? [`예: ${content.example}`] : [])];
+}
+
+function appendContributionItem(lines: string[], item: ContributionItem, indent = "  ") {
+  for (const [label, content] of [
+    ["문제", item.problem],
+    ["판단", item.decision],
+  ] as const) {
+    const formattedContent = formatContributionContent(content);
+    lines.push(`${indent}**${label}**: ${formattedContent[0]}`);
+    lines.push(...formattedContent.slice(1).map((line) => `${indent}${line}`));
+  }
+  if (item.result) {
+    const formattedContent = formatContributionContent(item.result);
+    lines.push(`${indent}**결과**: ${formattedContent[0]}`);
+    lines.push(...formattedContent.slice(1).map((line) => `${indent}${line}`));
+  }
+  for (const alternative of item.alternatives ?? []) {
+    lines.push(`${indent}**대안**: ${alternative.option} — ${alternative.whyNot}`);
+  }
+}
+
+function appendContribution(lines: string[], contribution: KeyContribution) {
+  lines.push(contribution.title ? `- **${contribution.title}**` : "-");
+
+  if ("items" in contribution) {
+    contribution.items.forEach((item, index) => {
+      lines.push(`  ${index + 1}.`);
+      appendContributionItem(lines, item, "    ");
+    });
+    return;
+  }
+
+  appendContributionItem(lines, contribution);
+}
 
 /**
  * ResumeData → Markdown 문자열로 변환합니다.
@@ -40,12 +79,14 @@ export function toMarkdown(data: ResumeData): string {
   if (s.frontend.length > 0) lines.push(`- Frontend: ${s.frontend.join(", ")}`);
   if (s.testing.length > 0) lines.push(`- Testing: ${s.testing.join(", ")}`);
   if (s.tooling.length > 0) lines.push(`- Tooling: ${s.tooling.join(", ")}`);
-  if (s.design.length > 0) lines.push(`- Design: ${s.design.join(", ")}`);
-  if (s.collaboration.length > 0) lines.push(`- Collaboration: ${s.collaboration.join(", ")}`);
+  if (s.design && s.design.length > 0) lines.push(`- Design: ${s.design.join(", ")}`);
+  if (s.collaboration && s.collaboration.length > 0) lines.push(`- Collaboration: ${s.collaboration.join(", ")}`);
   lines.push("");
 
   // ── Featured Projects ─────────────────────────────────────────────────────
-  const featuredProjects = data.work.flatMap((job) => job.projects.filter((p) => p.featured).map((p) => ({ ...p, company: job.company })));
+  const featuredProjects = data.work.flatMap((job) =>
+    job.projects.filter((p) => p.featured).map((p) => ({ ...p, company: job.company })),
+  );
   if (featuredProjects.length > 0) {
     lines.push("## 대표 프로젝트");
     lines.push("");
@@ -58,6 +99,10 @@ export function toMarkdown(data: ResumeData): string {
       lines.push("");
       lines.push(proj.oneLiner);
       lines.push("");
+      if (proj.metrics && proj.metrics.length > 0) {
+        lines.push(proj.metrics.map((m) => `${m.label}: ${m.value}`).join(" · "));
+        lines.push("");
+      }
       lines.push(`기술 스택: ${proj.techStack.join(", ")}`);
       lines.push("");
 
@@ -65,13 +110,7 @@ export function toMarkdown(data: ResumeData): string {
         lines.push("**핵심 기여**");
         lines.push("");
         for (const kc of contributions) {
-          const prefix = kc.title ? `- **${kc.title}**\n  ` : `- `;
-          lines.push(`${prefix}**문제**: ${kc.problem}`);
-          lines.push(`  **판단**: ${kc.decision}`);
-          lines.push(`  **결과**: ${kc.result}`);
-          if (kc.ownershipEvidence && kc.ownershipEvidence.length > 0) {
-            lines.push(`  오너십 근거: ${kc.ownershipEvidence.join(", ")}`);
-          }
+          appendContribution(lines, kc);
         }
         lines.push("");
       }
@@ -101,10 +140,7 @@ export function toMarkdown(data: ResumeData): string {
           lines.push("");
           if (proj.keyContributions && proj.keyContributions.length > 0) {
             for (const kc of proj.keyContributions) {
-              const prefix = kc.title ? `- **${kc.title}**\n  ` : `- `;
-              lines.push(`${prefix}**문제**: ${kc.problem}`);
-              lines.push(`  **판단**: ${kc.decision}`);
-              lines.push(`  **결과**: ${kc.result}`);
+              appendContribution(lines, kc);
             }
             lines.push("");
           }
@@ -125,13 +161,14 @@ export function toMarkdown(data: ResumeData): string {
       lines.push("");
       lines.push(`${proj.oneLiner} (${proj.role})`);
       lines.push("");
+      if (proj.metrics && proj.metrics.length > 0) {
+        lines.push(proj.metrics.map((m) => `${m.label}: ${m.value}`).join(" · "));
+        lines.push("");
+      }
       lines.push(`기술 스택: ${proj.techStack.join(", ")}`);
       lines.push("");
       for (const h of proj.keyContributions) {
-        const prefix = h.title ? `- **${h.title}**\n  ` : `- `;
-        lines.push(`${prefix}**문제**: ${h.problem}`);
-        lines.push(`  **판단**: ${h.decision}`);
-        lines.push(`  **결과**: ${h.result}`);
+        appendContribution(lines, h);
       }
       lines.push("");
     }
@@ -152,6 +189,16 @@ export function toMarkdown(data: ResumeData): string {
     lines.push("");
     for (const lang of data.languages) {
       lines.push(`- ${lang.name}: ${lang.level}`);
+    }
+    lines.push("");
+  }
+
+  // ── Writing ───────────────────────────────────────────────────────────────
+  if (data.writing && data.writing.length > 0) {
+    lines.push("## 글");
+    lines.push("");
+    for (const w of data.writing) {
+      lines.push(`- [${w.title}](${w.url})${w.note ? ` — ${w.note}` : ""}`);
     }
     lines.push("");
   }

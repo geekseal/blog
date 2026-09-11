@@ -23,8 +23,8 @@ export function toJsonLd(data: ResumeData): Record<string, unknown> {
   for (const tech of data.skills.frontend) allTechKeywords.add(tech);
   for (const tech of data.skills.testing) allTechKeywords.add(tech);
   for (const tech of data.skills.tooling) allTechKeywords.add(tech);
-  for (const d of data.skills.design) allTechKeywords.add(d);
-  for (const c of data.skills.collaboration) allTechKeywords.add(c);
+  for (const d of data.skills.design ?? []) allTechKeywords.add(d);
+  for (const c of data.skills.collaboration ?? []) allTechKeywords.add(c);
 
   return {
     "@context": "https://schema.org",

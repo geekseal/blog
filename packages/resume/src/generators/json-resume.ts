@@ -1,4 +1,22 @@
-import type { ResumeData } from "../types.js";
+import type { ContributionContent, ResumeData } from "../types.js";
+
+function contributionContentToText(content: ContributionContent): string {
+  if (typeof content === "string") return content;
+
+  return `${content.content}${content.example ? ` 예: ${content.example}` : ""}`;
+}
+
+function contributionToText(contribution: ResumeData["openSource"][number]["keyContributions"][number]): string {
+  const items = "items" in contribution ? contribution.items : [contribution];
+  return items
+    .map((item) =>
+      [item.problem, item.decision, item.result]
+        .filter((content): content is ContributionContent => content !== undefined)
+        .map(contributionContentToText)
+        .join(" → "),
+    )
+    .join(" | ");
+}
 
 /**
  * ResumeData → JSON Resume 표준에 가깝게 변환합니다.
@@ -49,7 +67,7 @@ export function toJsonResume(data: ResumeData): Record<string, unknown> {
     projects: data.openSource.map((p) => ({
       name: p.name,
       description: p.oneLiner,
-      highlights: p.keyContributions.map((c) => `${c.problem} → ${c.decision} → ${c.result}`),
+      highlights: p.keyContributions.map(contributionToText),
       teamSize: p.teamSize,
       status: p.status,
       role: p.role,
@@ -58,6 +76,7 @@ export function toJsonResume(data: ResumeData): Record<string, unknown> {
     })),
     certificates: data.certifications.map((c) => ({ name: c.name })),
     languages: data.languages.map((l) => ({ language: l.name, fluency: l.level })),
+    writing: data.writing?.map((w) => ({ title: w.title, url: w.url, note: w.note || undefined })),
 
     meta: {
       canonical: data.basics.canonical,

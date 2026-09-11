@@ -36,18 +36,53 @@ export interface Skills {
   frontend: string[];
   testing: string[];
   tooling: string[];
-  design: string[];
-  collaboration: string[];
+  design?: string[];
+  collaboration?: string[];
 }
 
 // ── Key Contributions (공용) ────────────────────────────────────────────────
 
-export interface KeyContribution {
+/** 검토했다가 포기한 선택지 */
+export interface ContributionAlternative {
+  option: string;
+  whyNot: string;
+}
+
+export interface ContributionDetail {
+  content: string;
+  example?: string;
+}
+
+export type ContributionContent = string | ContributionDetail;
+
+export interface ContributionItem {
+  problem: ContributionContent;
+  decision: ContributionContent;
+  result?: ContributionContent;
+  alternatives?: ContributionAlternative[];
+}
+
+interface ContributionBase {
   title?: string;
-  problem: string;
-  decision: string;
-  result: string;
-  ownershipEvidence?: string[];
+}
+
+export interface SimpleKeyContribution extends ContributionBase {
+  problem: ContributionContent;
+  decision: ContributionContent;
+  result?: ContributionContent;
+  alternatives?: ContributionAlternative[];
+}
+
+export interface DetailedKeyContribution extends ContributionBase {
+  items: ContributionItem[];
+}
+
+export type KeyContribution = SimpleKeyContribution | DetailedKeyContribution;
+
+/** 카드 상단에 스캔용으로 노출하는 수치. 첫 항목은 적용 범위 */
+export interface ProjectMetric {
+  label: string;
+  value: string;
 }
 
 // ── Work Experience (회사 경력) ─────────────────────────────────────────────
@@ -60,6 +95,7 @@ export interface WorkProject {
   featured: boolean;
   techStack: string[];
   oneLiner: string;
+  metrics?: ProjectMetric[];
   keyContributions?: KeyContribution[];
 }
 
@@ -86,6 +122,7 @@ export interface OpenSourceProject {
   repoUrl?: string;
   techStack: string[];
   oneLiner: string;
+  metrics?: ProjectMetric[];
   keyContributions: KeyContribution[];
 }
 
@@ -130,6 +167,12 @@ export interface Language {
   level: string;
 }
 
+export interface Writing {
+  title: string;
+  url: string;
+  note?: string;
+}
+
 // ── Root ────────────────────────────────────────────────────────────────────
 
 export interface ResumeData {
@@ -142,6 +185,7 @@ export interface ResumeData {
   training: Training[];
   certifications: Certification[];
   languages: Language[];
+  writing?: Writing[];
   meta: Meta;
 }
 
