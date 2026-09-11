@@ -102,7 +102,7 @@ function Tag({ children, variant = "default" }: { children: React.ReactNode; var
 
 function MetricRow({ metrics }: { metrics: ProjectMetric[] }) {
   return (
-    <dl className="flex flex-wrap gap-x-5 gap-y-1 mt-2 pt-2 border-t border-border/60 text-xs">
+    <dl className="flex flex-wrap gap-x-5 gap-y-1 mt-2 pt-2 text-xs">
       {metrics.map((m) => (
         <div key={m.label} className="flex items-baseline gap-1.5">
           <dt className="text-muted-foreground">{m.label}</dt>
@@ -267,8 +267,8 @@ function FeaturedProjectCard({
       {/* Description */}
       <p className="text-sm text-foreground/80 mt-1 leading-relaxed">{parseInlineMarkdown(project.oneLiner)}</p>
 
-      {project.metrics && project.metrics.length > 0 && <MetricRow metrics={project.metrics} />}
       {project.techStack.length > 0 && <TechStackRow techStack={project.techStack} />}
+      {project.metrics && project.metrics.length > 0 && <MetricRow metrics={project.metrics} />}
 
       {/* Key Contributions */}
       {contributions.length > 0 && (
@@ -329,8 +329,8 @@ function OpenSourceProjectCard({ project }: { project: OpenSourceProject }) {
         <span className="text-xs text-muted-foreground ml-auto tabular-nums">{project.teamSize}인</span>
       </div>
       <p className="text-sm text-foreground/80 mt-1.5 leading-relaxed">{parseInlineMarkdown(project.oneLiner)}</p>
-      {project.metrics && project.metrics.length > 0 && <MetricRow metrics={project.metrics} />}
       {project.techStack.length > 0 && <TechStackRow techStack={project.techStack} />}
+      {project.metrics && project.metrics.length > 0 && <MetricRow metrics={project.metrics} />}
       {contributions.length > 0 && (
         <div className="mt-3 space-y-2">
           <p className="text-[11px] font-semibold text-muted-foreground">핵심 기여</p>
